@@ -1,7 +1,7 @@
 # 🚀 Word Puzzle
-This is a simple Wordle-like game, where your objective is to guess the word randomly generated, with a total of 6 lives until Game Over.
+This is a simple Wordle-like game, where your objective is to guess the english word randomly generated, with a total of 6 lives until Game Over.
 
-Acess there:
+Play Game Here: https://caiky-souza.github.io/Word-Puzzle/templates/index.html
 
 # ⚡ Technologies
 This project counts with:
