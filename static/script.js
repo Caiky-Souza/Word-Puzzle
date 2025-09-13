@@ -19,6 +19,7 @@ async function genWord()
 
     toMatchWord = response.word;
 }
+
 function updateLives(){
     let livesMetter = document.querySelector(".lives");
     livesMetter.textContent = lives
@@ -39,6 +40,8 @@ async function invalidWord(invalid=false)
             blocks[wordPosition + i].textContent = "";
             blocks[wordPosition + i].style.borderColor = "gray";
         }
+        userString = ""
+        char = 0
     }, 500)
 
     if (invalid)
