@@ -1,4 +1,6 @@
 # 🚀 Word Puzzle
+
+⚠️DESKTOP ONLY
 This is a simple Wordle-like game, where your objective is to guess the english word randomly generated, with a total of 6 lives until Game Over.
 
 Play Game Here: https://caiky-souza.github.io/Word-Puzzle/templates/index.html
