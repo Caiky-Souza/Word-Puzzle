@@ -1,10 +1,11 @@
-let won = false;
 let word = 0;
 let char = 0;
 let lives = 6;
+let won = false;
 
-let toMatchWord = undefined;
+
 let userString = "";
+
 
 let blocks = document.querySelectorAll(".block");
 
@@ -12,20 +13,24 @@ function isLetter(letter) {
   return /^[a-zA-Z]$/.test(letter);
 }
 
-async function genWord()
+
+async function generateWord()
 {
     let promise = await fetch("https://words.dev-apis.com/word-of-the-day?random=1");
     let response = await promise.json();
 
-    toMatchWord = response.word;
+    return response.word;
 }
+
+
 
 function updateLives(){
     let livesMetter = document.querySelector(".lives");
     livesMetter.textContent = lives
 }
 
-async function invalidWord(invalid=false) 
+
+async function invalidWord() 
 {
     let wordPosition = (word * 5)
 
@@ -44,17 +49,12 @@ async function invalidWord(invalid=false)
         char = 0
     }, 500)
 
-    if (invalid)
+    for (let i = 0; i < 5; i++)
     {
-        for (let i = 0; i < 5; i++)
-        {
-            blocks[wordPosition + i].style.backgroundColor = "white"
-        }
-        return;
+        blocks[wordPosition + i].style.backgroundColor = "white"
     }
-
-
 }
+
 function addLetter(event){
 
     let divPosition = (word * 5) + char
@@ -73,35 +73,30 @@ function addLetter(event){
     char += 1;
 };
 
-function removeLetter(event)
+function removeLetter()
 {
-    let divPosition = ((word * 5) + char) - 1
-
-    let currentDiv = blocks[divPosition]
-    //Return if no letters typed in
     if (char == 0)
     {
-        return
-    };
+        return;
+    }
+
+    let divPosition = ((word * 5) + char) - 1;
+    let currentDiv = blocks[divPosition];
+    
 
     //Remove one letter 
     currentDiv.textContent = "";
-    userString = userString.substring(0,userString.length - 1)
-    char -= 1
-    
-    
+    userString = userString.substring(0, userString.length - 1);
+    char -= 1;
 }
 
 
 function success()
 {
     let wordPosition = (word * 5)
-    
     let wordBlocks = Array.from(blocks)
     
     wordBlocks = wordBlocks.slice(wordPosition, (wordPosition + 5))
-
-    console.log(blocks)
 
     for (let i = 0; i < 5; i++)
     {
@@ -109,9 +104,11 @@ function success()
     };
 
     let h1 = document.querySelector(".response")
+
     h1.textContent = "Congratulations!!!, you won!";
     h1.style.backgroundColor = "Green";
     h1.style.opacity = 1;
+
     won = true;
 }
 
@@ -124,24 +121,31 @@ function gameOver()
     subh1.textContent = toMatchWord
     div.style.opacity = 1;
 }
+
+const toMatchWord = await generateWord()
+
+window.x = toMatchWord
 async function checkWord()
 {
     if (toMatchWord == userString)
     {
         success();
-        return
+        return;
     }
     else 
     {
         lives -= 1;
         updateLives();
+
         if (lives < 1)
         {   
-            gameOver(toMatchWord)
-        };
+            gameOver(toMatchWord);
+        }
     };
 
     let failure = true;
+
+
     for (let i = 0; i < 5; i++)
     {
         if (toMatchWord[i] == userString[i])
@@ -161,14 +165,17 @@ async function checkWord()
 
     if (failure)
     {
-        invalidWord(failure=true);
+        invalidWord();
+
         char = 0;
         userString = "";
-        return
+        
+        return;
     };
 
     word += 1;
     char = 0;
+
     userString = "";
     
 };
@@ -183,55 +190,49 @@ function toColor(index, color)
 }
 
 async function validateWord(){
-    if (char != 5)
-    {
-        return false
-    };
-
     let promise = await fetch("https://words.dev-apis.com/validate-word", {
         headers: {"Content-Type": "application/json"},
         method:"POST",
         body:JSON.stringify({"word":userString})
     });
 
-    let response = await promise.json()
-    
-    let validWord = response["validWord"]
+    let { validWord } = await promise.json();
 
     if (!validWord)
     {
-        invalidWord(true);
+        invalidWord();
         return false;
     };
-    return true
+
+    return true;
 };
 
 
 async function checkKey(event){
-    if (!toMatchWord) {
-        await genWord();
-    }
-
+    
     if (lives < 1 || won)
     {
         return;
     };
 
     const key = event.key;
-    
+
     if (key == "Backspace")
     {
         removeLetter(event);
     }
-
     else if (key == "Enter")
     {
-        validWord = await validateWord()
-        console.log(validWord)
+        if (char != 5)
+        {
+            return;
+        }
+
+        let validWord = await validateWord();
         if (!validWord)
         {
-            return
-        };
+            return;
+        }
 
         await checkWord();
 
@@ -245,7 +246,10 @@ async function checkKey(event){
     event.preventDefault();
 };
 
-document.addEventListener("keyup", checkKey);
-document.addEventListener("DOMContentLoaded", function(){
+
+async function main(){
     updateLives();
-});
+    document.addEventListener("keyup", checkKey);
+}
+
+await main();
